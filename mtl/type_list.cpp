@@ -1,5 +1,11 @@
 #include "type_list.h"
-#include <typeinfo>
+#include <iostream>
+
+// example types
+struct A{ static void Print(int v) {std::cout << " A" << v;}};
+struct B{ static void Print(int v) {std::cout << " B" << v;}};
+struct C{ static void Print(int v) {std::cout << " C" << v;}};
+struct D{ static void Print(int v) {std::cout << " D" << v;}};
 
 int main()
 {

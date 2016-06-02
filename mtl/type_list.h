@@ -1,13 +1,5 @@
 #pragma once
-#include <iostream>
 #include <tuple>
-#include <functional>
-
-// example types
-struct A{ static void Print(int v) {std::cout << " A" << v;}};
-struct B{ static void Print(int v) {std::cout << " B" << v;}};
-struct C{ static void Print(int v) {std::cout << " C" << v;}};
-struct D{ static void Print(int v) {std::cout << " D" << v;}};
 
 // type list
 template <typename ... Args>
