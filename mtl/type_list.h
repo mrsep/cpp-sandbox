@@ -20,7 +20,7 @@ struct type_list
   template <std::size_t N>
   using type = typename std::tuple_element<N, tuple_type>::type;
 
-  // size of elements in the type list
+  // number of elements in the type list
   static const std::size_t size = std::tuple_size<tuple_type>::value;
 };
 
@@ -33,6 +33,11 @@ struct Print_F {
 };
 
 // implementation of for each taking a type list, a Functor and arguments for the functor
+// general case
+// L .. type list
+// F .. functor as template template parameter
+// N .. current element of the type_list to process
+// Arg .. variable number of parameters of the functor
 template <typename L, template <typename, typename ...> class F, std::size_t N, typename ... Arg>
 struct for_each_type_impl {
 
@@ -43,6 +48,7 @@ struct for_each_type_impl {
   }
 };
 
+// break case
 template <typename L, template <typename, typename ...> class F, typename ... Arg>
 struct for_each_type_impl<L,F,0,Arg ...> {
 
@@ -51,6 +57,9 @@ struct for_each_type_impl<L,F,0,Arg ...> {
   }
 };
 
+// function taking a type_list, a functor, argument types and their values
+// and executes the functor for each type in the list using the arugments
+// requires that each type in the type list satisfies the requirements of the functor
 template <typename L, template <typename, typename ...> class F, typename ... Arg>
 void for_each_type(Arg ... args) {
   for_each_type_impl<L,F,L::size-1,Arg ...>()(args ...);
