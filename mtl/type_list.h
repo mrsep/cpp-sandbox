@@ -32,20 +32,22 @@ struct Print_F {
 // Arg .. variable number of parameters of the functor
 template <typename L, template <typename, typename ...> class F, std::size_t N, typename ... Arg>
 struct for_each_type_impl {
-
   void operator()(Arg ... args) {
+    using ele_type = typename L::template type<N>;
+
     for_each_type_impl<L,F,N-1,Arg ...>()(args ...);
     
-    F<L::type<N>, Arg ...>()(args ...);
+    F<ele_type, Arg ...>()(args ...);
   }
 };
 
 // break case
 template <typename L, template <typename, typename ...> class F, typename ... Arg>
 struct for_each_type_impl<L,F,0,Arg ...> {
+  using ele_type = typename L::template type<0>;
 
   void operator()(Arg ... args) {
-    F<L::type<0>, Arg ...>()(args ...);
+    F<ele_type, Arg ...>()(args ...);
   }
 };
 
