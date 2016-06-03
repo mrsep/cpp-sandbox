@@ -47,6 +47,20 @@ public:
   static inline T* Head() { return head; }
   static inline T* Tail() { return tail; }
   static inline bool is_empty() { return head == nullptr && tail == nullptr; }
+  static inline void Clear() {
+    while (Head() != nullptr) {
+      delete Head();
+    }
+  }
+  static inline size_t Size() {
+    size_t count{0};
+    T* p = Head();
+    while (p != nullptr) {
+      ++count;
+      p = p->Next();
+    }
+    return count;
+  }
 
   // iterator
 

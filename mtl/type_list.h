@@ -24,7 +24,7 @@ struct type_list
 // Arg .. variable number of parameters of the functor
 template <typename L, template <typename, typename ...> class F, std::size_t N, typename ... Arg>
 struct for_each_type_impl {
-  void operator()(Arg ... args) {
+  void operator()(Arg & ... args) {
     using ele_type = typename L::template type<N>;
 
     for_each_type_impl<L,F,N-1,Arg ...>()(args ...);
@@ -38,7 +38,7 @@ template <typename L, template <typename, typename ...> class F, typename ... Ar
 struct for_each_type_impl<L,F,0,Arg ...> {
   using ele_type = typename L::template type<0>;
 
-  void operator()(Arg ... args) {
+  void operator()(Arg & ... args) {
     F<ele_type, Arg ...>()(args ...);
   }
 };
@@ -47,7 +47,7 @@ struct for_each_type_impl<L,F,0,Arg ...> {
 // and executes the functor for each type in the list using the arugments
 // requires that each type in the type list satisfies the requirements of the functor
 template <typename L, template <typename, typename ...> class F, typename ... Arg>
-void for_each_type(Arg ... args) {
+void for_each_type(Arg & ... args) {
   for_each_type_impl<L,F,L::size-1,Arg ...>()(args ...);
 }
 

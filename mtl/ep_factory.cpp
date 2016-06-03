@@ -6,7 +6,7 @@
 
 struct EventProvider {
   EventProvider() = default;
-  EventProvider(EventProvider&& other) = default;
+  EventProvider(EventProvider&& other) {}
   virtual ~EventProvider() = default;
 
   virtual void update(float) = 0;
@@ -29,7 +29,7 @@ struct BlinkPata {
 struct BlinkProvider : public EventProvider, public dlist<BlinkProvider> {
 
   BlinkProvider(const Config& config) : pata(config), data() {}
-  BlinkProvider(BlinkProvider&& other) = default;
+  BlinkProvider(BlinkProvider&& other) : pata(other.pata), data(other.data) {}
   BlinkPata pata;
   BlinkData data;
 
@@ -40,7 +40,7 @@ struct BlinkProvider : public EventProvider, public dlist<BlinkProvider> {
 struct HeartProvider : public EventProvider, public dlist<HeartProvider> {
 
   HeartProvider(const Config& config) : pata(config), data() {}
-  HeartProvider(HeartProvider&& other) = default;
+  HeartProvider(HeartProvider&& other) : pata(other.pata), data(other.data) {}
   BlinkPata pata;
   BlinkData data;
 
@@ -52,31 +52,36 @@ template <typename T, typename Container, typename Conf>
 struct Fill {
   void operator()(Container& container, const Conf& config) {
     container.emplace_back(typename Container::value_type(new T(config)));
-    //container.emplace_back(std::make_unique<T>(config));
   }
 };
 
 int main() {
   using ep_tlist = type_list<HeartProvider, BlinkProvider>;
-  //using ptr_t = EventProvider*;
-  using ptr_t = std::unique_ptr<EventProvider>;
+  using ptr_t = EventProvider*;
+  //using ptr_t = std::unique_ptr<EventProvider>;
   using ep_container = std::list<ptr_t>;
 
   ep_container provider;
 
-  provider.push_back(ptr_t(new HeartProvider(Config{true})));
+  //provider.push_back(ptr_t(new HeartProvider(Config{true})));
   Fill<HeartProvider,ep_container,Config>()(provider, Config{true});
   
-  for_each_type<ep_tlist,Fill,ep_container,Config>(provider, Config{true});
+  for (int i=0; i < 1000; ++i) {
+    //provider.clear();
 
-  //provider.clear();
-
-  //for_each_type<ep_tlist,Fill,ep_container,Config>(provider, Config{false});
+    for_each_type<ep_tlist,Fill,ep_container,Config>(provider, Config{true});
+    for_each_type<ep_tlist,Fill,ep_container,Config>(provider, Config{false});
+  }
 
   std::cout << provider.size() << std::endl;
   for (auto& ep : provider) {
     std::cout << ep->read() << std::endl;
   }
+
+  BlinkProvider::Clear();
+
+  std::cout << "BP: " << BlinkProvider::Size() << std::endl;
+  std::cout << "HP: " << HeartProvider::Size() << std::endl;
 
   return 0;
 }
