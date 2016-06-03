@@ -112,8 +112,11 @@ int main() {
     for_each_type<ep_tlist,Fill,ep_container,Config>(provider, cb);
   }
 
+  //for_each_type<ep_tlist,Clear>();
+  for (auto it = provider.begin(); it != provider.end(); ++it) {
+    delete *it;
+  }
   provider.clear();
-  for_each_type<ep_tlist,Clear>();
 
   std::cout << "providers: " << provider.size() << std::endl;
   std::cout << "BP: " << BlinkProvider::Size() << std::endl;
