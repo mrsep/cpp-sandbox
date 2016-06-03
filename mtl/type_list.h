@@ -16,14 +16,6 @@ struct type_list
   static const std::size_t size = std::tuple_size<tuple_type>::value;
 };
 
-// example Functor, matching the interface of the example classes
-template <typename T, typename ... Arg>
-struct Print_F {
-  void operator()(Arg ... args) {
-    T::Print(args ... );
-  }
-};
-
 // implementation of for each taking a type list, a Functor and arguments for the functor
 // general case
 // L .. type list

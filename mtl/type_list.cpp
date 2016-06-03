@@ -7,6 +7,15 @@ struct B{ static void Print(int v) {std::cout << " B" << v;}};
 struct C{ static void Print(int v) {std::cout << " C" << v;}};
 struct D{ static void Print(int v) {std::cout << " D" << v;}};
 
+// example Functor, matching the interface of the example classes
+template <typename T, typename ... Arg>
+struct Print_F {
+  void operator()(Arg ... args) {
+    T::Print(args ... );
+  }
+};
+
+
 int main()
 {
   using EP_list = type_list<A, B, C, D>;

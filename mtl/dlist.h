@@ -29,7 +29,7 @@ public:
       prev = tail;
       tail = T_this;
     }
-    std::cout << "dlist ctor called" << std::endl;
+    //std::cout << "dlist ctor called" << std::endl;
   }
 
   virtual ~dlist() {
@@ -37,7 +37,7 @@ public:
     else { prev->next = next; }
     if (is_tail()) { tail = prev; }
     else { next->prev = prev; }
-    std::cout << "dlist dtor called" << std::endl;
+    //std::cout << "dlist dtor called" << std::endl;
   }
 
 // public interface

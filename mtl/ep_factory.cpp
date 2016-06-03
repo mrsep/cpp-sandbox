@@ -1,10 +1,12 @@
 #include "type_list.h"
+#include "dlist.h"
 #include <iostream>
 #include <memory>
 #include <list>
 
 struct EventProvider {
   EventProvider() = default;
+  EventProvider(EventProvider&& other) = default;
   virtual ~EventProvider() = default;
 
   virtual void update(float) = 0;
@@ -24,9 +26,10 @@ struct BlinkPata {
   }
 };
 
-struct BlinkProvider : public EventProvider {
+struct BlinkProvider : public EventProvider, public dlist<BlinkProvider> {
 
   BlinkProvider(const Config& config) : pata(config), data() {}
+  BlinkProvider(BlinkProvider&& other) = default;
   BlinkPata pata;
   BlinkData data;
 
@@ -34,9 +37,10 @@ struct BlinkProvider : public EventProvider {
   float read() override { return pata.pata + data.current_state; }
 };
 
-struct HeartProvider : public EventProvider {
+struct HeartProvider : public EventProvider, public dlist<HeartProvider> {
 
   HeartProvider(const Config& config) : pata(config), data() {}
+  HeartProvider(HeartProvider&& other) = default;
   BlinkPata pata;
   BlinkData data;
 
@@ -47,7 +51,8 @@ struct HeartProvider : public EventProvider {
 template <typename T, typename Container, typename Conf>
 struct Fill {
   void operator()(Container& container, const Conf& config) {
-    container.push_back(typename Container::value_type(new T(config)));
+    container.emplace_back(typename Container::value_type(new T(config)));
+    //container.emplace_back(std::make_unique<T>(config));
   }
 };
 
@@ -62,7 +67,7 @@ int main() {
   provider.push_back(ptr_t(new HeartProvider(Config{true})));
   Fill<HeartProvider,ep_container,Config>()(provider, Config{true});
   
-  //for_each_type<ep_tlist,Fill,ep_container,Config>(provider, Config{true});
+  for_each_type<ep_tlist,Fill,ep_container,Config>(provider, Config{true});
 
   //provider.clear();
 
